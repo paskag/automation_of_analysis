@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import datetime
 
 class Analysis:
-    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False):
+    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False):
         self.base_format = deepcopy(base_format)
         self.df = deepcopy(df)
         self.base_format.drop(["Cost", "Raanana", "Target", "Avg(FQ>0)", "BB", "FBA Fee"], axis=1, inplace=True)
@@ -12,6 +12,7 @@ class Analysis:
         self._delete_brands = delete_brands
         self._skip = False
         self._name = None
+        self._lindo = lindo
         
     def process_name_of_columns(self):
         '''
@@ -25,7 +26,9 @@ class Analysis:
                       "unidades": "qnty", "in stock": "qnty", "price (usd)": "price", "name": "description", 
                       "price (eur)": "price", "artikel": "description", "item description": "description", 
                       "net price": "price", "max qty": "qnty", "euro price": "price", "€ price": "price", 
-                      "price eur": "price", "net price [eur]": "price", "qty available": "qnty"}
+                      "price eur": "price", "net price [eur]": "price", "qty available": "qnty", 
+                      "ברקוד": "Barcode", "שם פריט": "description" , "מחיר": "price", "כמות במלאי": "qnty", 
+                      "כמות": "qnty", "מלא": "qnty"}
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
@@ -47,7 +50,10 @@ class Analysis:
         Here we delete brands that we cannot sell
         """
         if "brand" not in self.df.columns:
-            self.df["brand"] = self.df["description"].apply(lambda x: x.split()[0].lower())
+            if self._lindo is False:
+                self.df["brand"] = self.df["description"].apply(lambda x: x.split()[0].lower().strip())
+            else:
+                self.df["brand"] = self.df["description"].apply(lambda x: x.split("-")[-1].lower().strip())
         self.brands = pd.read_excel(r"C:\Users\User\Desktop\Python for analysis\restriction_list.xlsx")
         res_brands = list(self.brands["brand"])
         del_idx = []
