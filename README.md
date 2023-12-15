@@ -8,3 +8,6 @@
 ### This is one example of how my system works
 https://github.com/paskag/automation_of_analysis/assets/90197819/cec27129-7ae6-4eea-8904-9b6dc3b996ed
 
+### An example of how my system works if the file is in Hebrew
+https://github.com/paskag/automation_of_analysis/assets/90197819/9c149d96-63fb-4b0f-92a6-2038e392efb9
+
