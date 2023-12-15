@@ -4,4 +4,7 @@
 
 ### I work for E.N Trade as a Data Analyst. It is a company that sells perfume on Amazon. One of my tasks is: I need to analyse a file of hundreds or thousands perfumes. But before analysis I need to prepare this file: delete brands we cannot sell, leave only profitable items and etc. Previously our company did it manually, it took a lot of time and brought some inevitable mistakes. My automation system has significantly increased the productivity of the workflow.
 
-![](https://drive.google.com/file/d/1QzECQPMQxxddJi75O7wtG7GCguVFr96N/view?usp=sharing)
+
+### This is one example of how my system works
+https://github.com/paskag/automation_of_analysis/assets/90197819/cec27129-7ae6-4eea-8904-9b6dc3b996ed
+
