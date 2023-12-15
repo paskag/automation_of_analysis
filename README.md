@@ -14,3 +14,7 @@ https://github.com/paskag/automation_of_analysis/assets/90197819/9c149d96-63fb-4
 ### An example of how my system works
 https://github.com/paskag/automation_of_analysis/assets/90197819/a1a6410d-0a95-4993-b822-2ba3504fbf86
 
+### An example of how my system works if the file is in German
+https://github.com/paskag/automation_of_analysis/assets/90197819/ab5c5282-7e70-47bf-b5a8-a6ac49491edd
+
+
