@@ -4,7 +4,18 @@ from copy import deepcopy
 from datetime import datetime
 
 class Analysis:
-    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False):
+    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False, exception_brands=[]):
+        '''
+        Initializing 
+
+        Args:
+            base_format (DataFrame): Our BaseFormat file
+            df (DataFrame): File we need to prepare for further analysis
+            use_keepa (bool): To use keepa for searching asins of barcodes or not. Default: True
+            delete_brands (bool): Delete restricted brands or not. Default: False
+            lindo (lindo): If the file is lindo or not. Default: False
+            exception_brands (list[str]): If we want to make an exception and not d`elete some restrcited brands. Supposed to work if delete_brands=True. Default: list()
+        '''
         self.base_format = deepcopy(base_format)
         self.df = deepcopy(df)
         self.base_format.drop(["Cost", "Raanana", "Target", "Avg(FQ>0)", "BB", "FBA Fee"], axis=1, inplace=True)
@@ -13,6 +24,7 @@ class Analysis:
         self._skip = False
         self._name = None
         self._lindo = lindo
+        self._exception_brands = exception_brands
         
     def process_name_of_columns(self):
         '''
@@ -25,10 +37,20 @@ class Analysis:
                       "qty.": "qnty", "itemname": "description", "price usd.": "price", "nombre articulo": "description", 
                       "unidades": "qnty", "in stock": "qnty", "price (usd)": "price", "name": "description", 
                       "price (eur)": "price", "artikel": "description", "item description": "description", 
-                      "net price": "price", "max qty": "qnty", "euro price": "price", "€ price": "price", 
-                      "price eur": "price", "net price [eur]": "price", "qty available": "qnty", 
+                      "net price": "price", "max qty": "qnty", "euro price": "price", "€ price": "price", "bar code": "Barcode", 
+                      "price eur": "price", "net price [eur]": "price", "qty available": "qnty", "final price": "price",
                       "ברקוד": "Barcode", "שם פריט": "description" , "מחיר": "price", "כמות במלאי": "qnty", 
-                      "כמות": "qnty", "מלא": "qnty"}
+                      "כמות": "qnty", "מלא": "qnty", "désignation du produit": "description", "gencod": "Barcode",
+                      "marca": "brand", "referenza": "description", "pcs": "qnty", "euro": 'price', "net": "price",
+                      "תאור פריט": "description", "מותג": "brand", "מחירון 01": "price", "מחירון": "price", "preis": "price",
+                      "תיאור פריט": "description", "מלאי": "qnty", "מחיר ליחידה": "price", "price  ($)": "price", "upc #": "Barcode",
+                      "שם": "description", "eancode": 'Barcode', "descrizione": "description", "mpn": "Barcode",
+                      "av.stock": "qnty", "upc": "Barcode", "ean-code": "Barcode", "codice ean": "Barcode",
+                      "marca": "brand", "descrizione": "description", "pcs": "qnty", "euro": "price", "euros": "price",
+                      "unit price": "price", "upc code": "Barcode", "direct av. st.": "qnty", "price (t2)": "price", 
+                      "descrizione prodotto": "description", "net . price": "price", "price w/o vat": "price", "quantity": "qnty",
+                      "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price",
+                      'special price euro': 'price'}
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
@@ -36,15 +58,27 @@ class Analysis:
             else:
                 name_columns[column] = low_column
         self.df = self.df.rename(name_columns, axis=1)
-        
+    
     def process_price(self):
         '''
         Here we fill all the NANs in price column
         '''
+        if self._lindo is True:
+            self.df["price"] = self.df["price"].apply(lambda x: \
+                                                      float(x.replace("\u200f", "").replace(",", "").replace("\xa0₪", "")))
+        if self.df["price"].dtype == "object":
+            self.df["price"] = self.df["price"].apply(lambda x: x if isinstance(x, (float, int)) \
+                                                      else x.replace(",", ".").strip()).astype("float64")    
         if self.df["price"].isna().sum() == 0:
             return
         self.df["price"] = self.df["price"].fillna("no price")
             
+    @staticmethod
+    def is_hebrew(text):
+        if ord(text.strip()[0]) in range(1488, 1515):
+            return True
+        return False
+    
     def delete_restricted_brands(self):
         """
         Here we delete brands that we cannot sell
@@ -53,14 +87,16 @@ class Analysis:
             if self._lindo is False:
                 self.df["brand"] = self.df["description"].apply(lambda x: x.split()[0].lower().strip())
             else:
-                self.df["brand"] = self.df["description"].apply(lambda x: x.split("-")[-1].lower().strip())
+                self.df["brand"] = self.df["description"].apply(lambda x: x.split("-")[-1].lower().strip() \
+                                                                if Analysis.is_hebrew(x) else x.split("-")[0].lower().strip())
         self.brands = pd.read_excel(r"C:\Users\User\Desktop\Python for analysis\restriction_list.xlsx")
         res_brands = list(self.brands["brand"])
         del_idx = []
+        exception_brands = [brand.lower() for brand in self._exception_brands]
         for idx in self.df.index:
-            brand = self.df.loc[idx, "brand"]
+            brand = str(self.df.loc[idx, "brand"])
             brand = brand.lower().strip()
-            if brand in res_brands:
+            if (brand in res_brands) and (brand not in exception_brands):
                 del_idx.append(idx)
         self.df = self.df[~self.df.index.isin(del_idx)]
         self.df = self.df.reset_index(drop=True)
@@ -71,30 +107,36 @@ class Analysis:
         """
         self.df['Barcode'] = pd.to_numeric(arg=self.df["Barcode"], errors="coerce", downcast="unsigned").astype("Int64")
         self.df = self.df.dropna(subset=["Barcode"])
+        self.df = self.df[~self.df["Barcode"].isin([0])]
         self.df.reset_index(inplace=True, drop=True)
         self.base_format["ASIN"] = self.base_format["ASIN"].astype("str")
         self.base_format["ASIN"] = self.base_format["ASIN"].apply(lambda x: x.strip())
-
-    def sum_qnty(self):
-        """
-        Here we sum the qnty of the same barcodes
-        """
-        if self.df.shape[0] == self.df["Barcode"].nunique():
-            return
-        grouped = self.df.groupby(by=["Barcode"], as_index=False).agg({"description": "first", "qnty": "sum", "price": "min"})
-        info = self.df.drop(["description", "qnty", "price"], axis=1).drop_duplicates(["Barcode"], keep="first")
-        self.df = grouped.merge(info, on="Barcode", how="left")
         
     def delete_qnty(self, num=20):
         """
         Here we delete rows where quantity is less than num. Default 20
         """
         self.df["qnty"] = self.df["qnty"].fillna(-1)
+        self.df["plus"] = self.df["qnty"].apply(lambda x: 1 if str(x).endswith("+") else 0)
         self.df["qnty_int"] = self.df["qnty"].apply(lambda x: int(x.strip("+")) if isinstance(x, str) else x)
         self.df = self.df[(self.df["qnty_int"] >= num) | (self.df["qnty_int"] == -1)]
         self.df = self.df.drop("qnty_int", axis=1)
         self.df.reset_index(inplace=True, drop=True)
-        
+
+    def sum_qnty(self):
+        """
+        Here we sum the qnty of the same barcodes
+        """
+        if self.df.shape[0] == self.df["Barcode"].nunique():
+            self.df = self.df.drop("plus", axis=1)
+            return
+        self.df["qnty_int"] = self.df["qnty"].apply(lambda x: int(x.strip("+")) if isinstance(x, str) else x)
+        grouped = self.df.groupby(by=["Barcode"], as_index=False).agg({"description": "first", "qnty_int": "sum", "price": "min", "plus": "max"})
+        info = self.df.drop(["description", "qnty", "qnty_int", "price", "plus"], axis=1).drop_duplicates(["Barcode"], keep="first")
+        self.df = grouped.merge(info, on="Barcode", how="left")
+        self.df["qnty"] = self.df.apply(lambda x: f'{x["qnty_int"]}+' if x["plus"] else x["qnty_int"], axis=1)
+        self.df = self.df.drop(["qnty_int", "plus"], axis=1)
+                 
     def merge_baseformat_and_df(self):
         '''
         Here we merge baseformat file with df. This will help us to see barcodes without asins
@@ -129,12 +171,15 @@ class Analysis:
         '''
         Here we process data from keepa file
         '''
+        self.keepa_barcode["Product Codes: EAN"] = self.keepa_barcode["Product Codes: EAN"].fillna(self.keepa_barcode["Product Codes: UPC"])
         self.keepa_barcode = self.keepa_barcode.rename({'Product Codes: EAN': 'Barcode'}, axis=1)
         if self.keepa_barcode["Barcode"].dtype == "object":
-            self.keepa_barcode['Barcode'] = self.keepa_barcode['Barcode'].fillna("0").str.split(',').apply(lambda x: [int(ean) for ean in x])
+            self.keepa_barcode['Barcode'] = self.keepa_barcode['Barcode'].fillna("0").str.split(',') \
+                                                 .apply(lambda x: [int(ean) for ean in x])
             self.keepa_barcode = self.keepa_barcode.explode('Barcode')
             self.keepa_barcode['Barcode'] = self.keepa_barcode['Barcode'].astype('Int64')
-        self.keepa_barcode = self.keepa_barcode[self.keepa_barcode["Barcode"].isin(self.missing_barcodes["Barcode"])].reset_index(drop=True)
+        self.keepa_barcode = self.keepa_barcode[self.keepa_barcode["Barcode"] \
+                                                .isin(self.missing_barcodes["Barcode"])].reset_index(drop=True)
     
     def concat_keepa_barcodes(self):
         '''
@@ -167,7 +212,8 @@ class Analysis:
         self.keepa_asin = self.keepa_asin.rename({'Product Codes: EAN': 'Barcode'}, axis=1)
         self.keepa_asin = self.keepa_asin[self.keepa_asin["Sales Rank: 30 days avg."] < 250_000]
         self.keepa_asin = self.keepa_asin[self.keepa_asin["Sales Rank: Current"] < 250_000]
-        self.keepa_asin["BB"] = self.keepa_asin[["Buy Box: Current", "Buy Box: 30 days avg.", "Buy Box: 90 days avg."]].min(axis=1)
+        self.keepa_asin["BB"] = self.keepa_asin[["Buy Box: Current", "Buy Box: 30 days avg.", \
+                                                 "Buy Box: 90 days avg."]].min(axis=1)
         self.keepa_asin = self.keepa_asin.dropna(subset=["BB", "FBA Fees:"])
         self.keepa_asin = self.keepa_asin.reset_index(drop=True)
         
@@ -243,12 +289,12 @@ class Analysis:
         """
         self.process_name_of_columns()
         self.process_price()
+        self.convertation()
         if self._delete_brands == True:
             self.delete_restricted_brands()
-        self.convertation()
         if "qnty" in self.df.columns:
-            self.sum_qnty()
             self.delete_qnty(num=20)
+            self.sum_qnty()
         self.merge_baseformat_and_df()
         if self._use_keepa == True:
             self.get_missing_barcodes()
