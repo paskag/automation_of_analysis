@@ -50,7 +50,7 @@ class Analysis:
                       "unit price": "price", "upc code": "Barcode", "direct av. st.": "qnty", "price (t2)": "price", 
                       "descrizione prodotto": "description", "net . price": "price", "price w/o vat": "price", "quantity": "qnty",
                       "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price",
-                      'special price euro': 'price'}
+                      'special price euro': 'price', "usd": "price", "net net": "price"}
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
@@ -89,7 +89,7 @@ class Analysis:
             else:
                 self.df["brand"] = self.df["description"].apply(lambda x: x.split("-")[-1].lower().strip() \
                                                                 if Analysis.is_hebrew(x) else x.split("-")[0].lower().strip())
-        self.brands = pd.read_excel(r"C:\Users\User\Desktop\Python for analysis\restriction_list.xlsx")
+        self.brands = pd.read_excel(r"C:\Users\User\OneDrive\Python for analysis\restriction_list.xlsx")
         res_brands = list(self.brands["brand"])
         del_idx = []
         exception_brands = [brand.lower() for brand in self._exception_brands]
