@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
+import os
 from copy import deepcopy
 from datetime import datetime
+
 
 class Analysis:
     def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False, exception_brands=[]):
@@ -89,7 +91,8 @@ class Analysis:
             else:
                 self.df["brand"] = self.df["description"].apply(lambda x: x.split("-")[-1].lower().strip() \
                                                                 if Analysis.is_hebrew(x) else x.split("-")[0].lower().strip())
-        self.brands = pd.read_excel(r"C:\Users\User\OneDrive\Python for analysis\restriction_list.xlsx")
+        user = os.getlogin()
+        self.brands = pd.read_excel(rf"C:\Users\{user}\OneDrive\Python for analysis\restriction_list.xlsx")
         res_brands = list(self.brands["brand"])
         del_idx = []
         exception_brands = [brand.lower() for brand in self._exception_brands]
