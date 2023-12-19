@@ -38,7 +38,7 @@ class Analysis:
                       "bezeichnung": "description", "menge": "qnty", "preis eur": "price", "ean barcode": "Barcode", 
                       "qty.": "qnty", "itemname": "description", "price usd.": "price", "nombre articulo": "description", 
                       "unidades": "qnty", "in stock": "qnty", "price (usd)": "price", "name": "description", 
-                      "price (eur)": "price", "artikel": "description", "item description": "description", 
+                      "price (eur)": "price", "artikel": "description", "item description": "description", "precio": "price", 
                       "net price": "price", "max qty": "qnty", "euro price": "price", "€ price": "price", "bar code": "Barcode", 
                       "price eur": "price", "net price [eur]": "price", "qty available": "qnty", "final price": "price",
                       "ברקוד": "Barcode", "שם פריט": "description" , "מחיר": "price", "כמות במלאי": "qnty", 
@@ -46,13 +46,14 @@ class Analysis:
                       "marca": "brand", "referenza": "description", "pcs": "qnty", "euro": 'price', "net": "price",
                       "תאור פריט": "description", "מותג": "brand", "מחירון 01": "price", "מחירון": "price", "preis": "price",
                       "תיאור פריט": "description", "מלאי": "qnty", "מחיר ליחידה": "price", "price  ($)": "price", "upc #": "Barcode",
-                      "שם": "description", "eancode": 'Barcode', "descrizione": "description", "mpn": "Barcode",
-                      "av.stock": "qnty", "upc": "Barcode", "ean-code": "Barcode", "codice ean": "Barcode",
+                      "שם": "description", "eancode": 'Barcode', "descrizione": "description", "mpn": "Barcode", "uni": "qnty",
+                      "av.stock": "qnty", "upc": "Barcode", "ean-code": "Barcode", "codice ean": "Barcode", "נטו": "price",
                       "marca": "brand", "descrizione": "description", "pcs": "qnty", "euro": "price", "euros": "price",
                       "unit price": "price", "upc code": "Barcode", "direct av. st.": "qnty", "price (t2)": "price", 
                       "descrizione prodotto": "description", "net . price": "price", "price w/o vat": "price", "quantity": "qnty",
                       "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price",
-                      'special price euro': 'price', "usd": "price", "net net": "price"}
+                      'special price euro': 'price', "usd": "price", "net net": "price", "פריט": "description", "בודד": "qnty",
+                      'descripcion': "description"}
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
