@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 class Analysis:
-    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False, exception_brands=[]):
+    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False, exception_brands=[], qnty=20):
         '''
         Initializing 
 
@@ -16,7 +16,8 @@ class Analysis:
             use_keepa (bool): To use keepa for searching asins of barcodes or not. Default: True
             delete_brands (bool): Delete restricted brands or not. Default: False
             lindo (lindo): If the file is lindo or not. Default: False
-            exception_brands (list[str]): If we want to make an exception and not d`elete some restrcited brands. Supposed to work if delete_brands=True. Default: list()
+            exception_brands (list[str]): If we want to make an exception and not delete some restrcited brands. Supposed to work if delete_brands=True. Default: list()
+            qnty (int): The minimum number of products in stock. Products that are less than this value will be deleted. Default: 20
         '''
         self.base_format = deepcopy(base_format)
         self.df = deepcopy(df)
@@ -27,6 +28,7 @@ class Analysis:
         self._name = None
         self._lindo = lindo
         self._exception_brands = exception_brands
+        self._qnty = qnty
         
     def process_name_of_columns(self):
         '''
@@ -53,7 +55,7 @@ class Analysis:
                       "descrizione prodotto": "description", "net . price": "price", "price w/o vat": "price", "quantity": "qnty",
                       "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price",
                       'special price euro': 'price', "usd": "price", "net net": "price", "פריט": "description", "בודד": "qnty",
-                      'descripcion': "description"}
+                      'descripcion': "description", "material description": "description", "price usd": "price", 'units': 'qnty'}
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
@@ -297,7 +299,7 @@ class Analysis:
         if self._delete_brands == True:
             self.delete_restricted_brands()
         if "qnty" in self.df.columns:
-            self.delete_qnty(num=20)
+            self.delete_qnty(num=self._qnty)
             self.sum_qnty()
         self.merge_baseformat_and_df()
         if self._use_keepa == True:
