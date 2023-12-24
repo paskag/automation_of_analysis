@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 class Analysis:
-    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False, exception_brands=[], qnty=20):
+    def __init__(self, base_format=None, df=None, use_keepa=True, delete_brands=False, lindo=False, exception_brands=[], qnty=20, bsr=250_000):
         '''
         Initializing 
 
@@ -18,6 +18,7 @@ class Analysis:
             lindo (lindo): If the file is lindo or not. Default: False
             exception_brands (list[str]): If we want to make an exception and not delete some restrcited brands. Supposed to work if delete_brands=True. Default: list()
             qnty (int): The minimum number of products in stock. Products that are less than this value will be deleted. Default: 20
+            bsr (int): The minimum number of BSR that we want. Products that have less BSR than this value will be deleted. Default: 250_000
         '''
         self.base_format = deepcopy(base_format)
         self.df = deepcopy(df)
@@ -29,6 +30,7 @@ class Analysis:
         self._lindo = lindo
         self._exception_brands = exception_brands
         self._qnty = qnty
+        self._bsr = bsr
         
     def process_name_of_columns(self):
         '''
@@ -55,7 +57,8 @@ class Analysis:
                       "descrizione prodotto": "description", "net . price": "price", "price w/o vat": "price", "quantity": "qnty",
                       "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price",
                       'special price euro': 'price', "usd": "price", "net net": "price", "פריט": "description", "בודד": "qnty",
-                      'descripcion': "description", "material description": "description", "price usd": "price", 'units': 'qnty'}
+                      'descripcion': "description", "material description": "description", "price usd": "price", 'units': 'qnty', 
+                      'marque': 'brand', 'designation': 'description', 'prix': 'price'}
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
@@ -216,8 +219,8 @@ class Analysis:
         Here we process data from keepa file to get the BB and FBA Fee, delete bad BSR
         '''
         self.keepa_asin = self.keepa_asin.rename({'Product Codes: EAN': 'Barcode'}, axis=1)
-        self.keepa_asin = self.keepa_asin[self.keepa_asin["Sales Rank: 30 days avg."] < 250_000]
-        self.keepa_asin = self.keepa_asin[self.keepa_asin["Sales Rank: Current"] < 250_000]
+        self.keepa_asin = self.keepa_asin[self.keepa_asin["Sales Rank: 30 days avg."] < self._bsr]
+        self.keepa_asin = self.keepa_asin[self.keepa_asin["Sales Rank: Current"] < self._bsr]
         self.keepa_asin["BB"] = self.keepa_asin[["Buy Box: Current", "Buy Box: 30 days avg.", \
                                                  "Buy Box: 90 days avg."]].min(axis=1)
         self.keepa_asin = self.keepa_asin.dropna(subset=["BB", "FBA Fees:"])
@@ -286,8 +289,7 @@ class Analysis:
         except PermissionError:
             print("I can't save the file because it is already opened. Please, close the file!!!")
             name  = input("If you have closed the file, type 'yes': ")
-            if name.strip().lower() == "yes":
-                self.save_file()
+            self.save_file()
   
     def start(self):
         """
