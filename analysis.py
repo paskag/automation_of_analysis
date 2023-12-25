@@ -71,10 +71,9 @@ class Analysis:
         '''
         Here we fill all the NANs in price column
         '''
-        if self._lindo is True:
-            self.df["price"] = self.df["price"].apply(lambda x: \
-                                                      float(x.replace("\u200f", "").replace(",", "").replace("\xa0₪", "")))
         if self.df["price"].dtype == "object":
+            self.df["price"] = self.df["price"].apply(lambda x: \
+                                                        float(x.replace("\u200f", "").replace(",", "").replace("\xa0₪", "")))
             self.df["price"] = self.df["price"].apply(lambda x: x if isinstance(x, (float, int)) \
                                                       else x.replace(",", ".").strip()).astype("float64")    
         if self.df["price"].isna().sum() == 0:
