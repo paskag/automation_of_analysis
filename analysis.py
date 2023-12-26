@@ -58,7 +58,8 @@ class Analysis:
                       "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price",
                       'special price euro': 'price', "usd": "price", "net net": "price", "פריט": "description", "בודד": "qnty",
                       'descripcion': "description", "material description": "description", "price usd": "price", 'units': 'qnty', 
-                      'marque': 'brand', 'designation': 'description', 'prix': 'price', "כמות מלאי": "qnty"}
+                      'marque': 'brand', 'designation': 'description', 'prix': 'price', "כמות מלאי": "qnty", 'תאור מוצר': 'description',
+                      'מחיר ליחידה': 'price'}
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
