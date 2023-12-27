@@ -202,8 +202,7 @@ class Analysis:
         '''
         Here we get all the asins. Then we need to put them to keepa
         '''
-        print("###" * 20)
-        print("###" * 20)
+        print("###" * 20, end="\n\n")
         for asin in self.base_format["ASIN"].unique():
             print(asin, end=" ")
             
@@ -274,8 +273,7 @@ class Analysis:
         '''
         Here we ask a user what name of the file does he want
         '''
-        print("###" * 20)
-        print("###" * 20)
+        print("###" * 20, end="\n\n")
         name = input("What name of the file do you want?: ")
         self._name = f'{name} {datetime.now().strftime("%d.%m.%Y")}'
     
