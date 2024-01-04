@@ -46,7 +46,7 @@ class Analysis:
                       "net price": "price", "max qty": "qnty", "euro price": "price", "€ price": "price", "bar code": "Barcode", 
                       "price eur": "price", "net price [eur]": "price", "qty available": "qnty", "final price": "price",
                       "ברקוד": "Barcode", "שם פריט": "description" , "מחיר": "price", "כמות במלאי": "qnty", 'תיאור': 'description',
-                      "כמות": "qnty", "מלא": "qnty", "désignation du produit": "description", "gencod": "Barcode",
+                      "כמות": "qnty", "מלא": "qnty", "désignation du produit": "description", "gencod": "Barcode", 'price (aed)': 'price',
                       "marca": "brand", "referenza": "description", "pcs": "qnty", "euro": 'price', "net": "price",
                       "תאור פריט": "description", "מותג": "brand", "מחירון 01": "price", "מחירון": "price", "preis": "price",
                       "תיאור פריט": "description", "מלאי": "qnty", "מחיר ליחידה": "price", "price  ($)": "price", "upc #": "Barcode",
