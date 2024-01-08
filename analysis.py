@@ -53,7 +53,7 @@ class Analysis:
                       "שם": "description", "eancode": 'Barcode', "descrizione": "description", "mpn": "Barcode", "uni": "qnty",
                       "av.stock": "qnty", "upc": "Barcode", "ean-code": "Barcode", "codice ean": "Barcode", "נטו": "price",
                       "marca": "brand", "descrizione": "description", "pcs": "qnty", "euro": "price", "euros": "price",
-                      "unit price": "price", "upc code": "Barcode", "direct av. st.": "qnty", "price (t2)": "price", 
+                      "unit price": "price", "upc code": "Barcode", "direct av. st.": "qnty", "price (t2)": "price", 'stock supp': 'qnty', 
                       "descrizione prodotto": "description", "net . price": "price", "price w/o vat": "price", "quantity": "qnty",
                       "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price", 'עלות': 'price',
                       'special price euro': 'price', "usd": "price", "net net": "price", "פריט": "description", "בודד": "qnty",
@@ -74,7 +74,7 @@ class Analysis:
         '''
         if self.df["price"].dtype == "object":
             self.df["price"] = self.df["price"].apply(lambda x: \
-                                                        float(x.replace("\u200f", "").replace(",", "").replace("\xa0₪", "")))
+                                                        float(x.replace("\u200f", "").replace(",", ".").replace("\xa0₪", "")))
             self.df["price"] = self.df["price"].apply(lambda x: x if isinstance(x, (float, int)) \
                                                       else x.replace(",", ".").strip()).astype("float64")    
         if self.df["price"].isna().sum() == 0:
