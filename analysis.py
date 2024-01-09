@@ -41,7 +41,7 @@ class Analysis:
                       "offer": "price", "product name": "description", "item": "description", "ean code": "Barcode", 
                       "bezeichnung": "description", "menge": "qnty", "preis eur": "price", "ean barcode": "Barcode", 
                       "qty.": "qnty", "itemname": "description", "price usd.": "price", "nombre articulo": "description", 
-                      "unidades": "qnty", "in stock": "qnty", "price (usd)": "price", "name": "description", 
+                      "unidades": "qnty", "in stock": "qnty", "price (usd)": "price", "name": "description", 'מחיר פיצוץ': 'price',
                       "price (eur)": "price", "artikel": "description", "item description": "description", "precio": "price", 
                       "net price": "price", "max qty": "qnty", "euro price": "price", "€ price": "price", "bar code": "Barcode", 
                       "price eur": "price", "net price [eur]": "price", "qty available": "qnty", "final price": "price",
@@ -59,7 +59,10 @@ class Analysis:
                       'special price euro': 'price', "usd": "price", "net net": "price", "פריט": "description", "בודד": "qnty",
                       'descripcion': "description", "material description": "description", "price usd": "price", 'units': 'qnty', 
                       'marque': 'brand', 'designation': 'description', 'prix': 'price', "כמות מלאי": "qnty", 'תאור מוצר': 'description',
-                      'מחיר ליחידה': 'price', "q.ty": "qnty", 'rtl €': 'price', 'incoming': 'qnty', 'qty per cs.': 'qnty'}
+                      'מחיר ליחידה': 'price', "q.ty": "qnty", 'rtl €': 'price', 'incoming': 'qnty', 'qty per cs.': 'qnty', 
+                      'product description': 'description', 'price per dzn in aed': 'price', 'ctn packaging': 'qnty', 
+                      'price per dozen in aed': 'price', 'carton packaging': 'qnty'
+                      }
         for column in self.df.columns:
             low_column = column.lower().strip()
             if low_column in right_name:
