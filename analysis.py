@@ -61,7 +61,8 @@ class Analysis:
                       'marque': 'brand', 'designation': 'description', 'prix': 'price', "כמות מלאי": "qnty", 'תאור מוצר': 'description',
                       'מחיר ליחידה': 'price', "q.ty": "qnty", 'rtl €': 'price', 'incoming': 'qnty', 'qty per cs.': 'qnty', 
                       'product description': 'description', 'price per dzn in aed': 'price', 'ctn packaging': 'qnty', 
-                      'price per dozen in aed': 'price', 'carton packaging': 'qnty', 'cost': 'price', 'available': 'qnty'
+                      'price per dozen in aed': 'price', 'carton packaging': 'qnty', 'cost': 'price', 'available': 'qnty',
+                      'line': 'brand', 'retail': 'price'
                       }
         for column in self.df.columns:
             low_column = column.lower().strip()
