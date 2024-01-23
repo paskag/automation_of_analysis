@@ -79,7 +79,7 @@ class Analysis:
         '''
         if self.df["price"].dtype == "object":
             self.df["price"] = self.df["price"].apply(lambda x: \
-                                                        float(x.replace("\u200f", "").replace(",", ".").replace("\xa0₪", "")))
+                                                        x.replace("\u200f", "").replace(",", ".").replace("\xa0₪", "")).astype("float64")   
             self.df["price"] = self.df["price"].apply(lambda x: x if isinstance(x, (float, int)) \
                                                       else x.replace(",", ".").strip()).astype("float64")    
         if self.df["price"].isna().sum() == 0:
@@ -299,8 +299,8 @@ class Analysis:
         Start the whole process
         """
         self.process_name_of_columns()
-        self.process_price()
         self.convertation()
+        self.process_price()
         if self._delete_brands == True:
             self.delete_restricted_brands()
         if "qnty" in self.df.columns:
