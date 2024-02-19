@@ -64,7 +64,7 @@ class Analysis:
                       'price per dozen in aed': 'price', 'carton packaging': 'qnty', 'cost': 'price', 'available': 'qnty',
                       'line': 'brand', 'retail': 'price', 'net. price': 'price', 'euro  price': 'price', 'eur': 'price',
                       'signature': 'brand', 'material name en': 'description', 'עלות קניה א.נ יוסף סחר': 'price', 
-                      'מחיר סיטונאות מבצע': 'price', 'price euro': 'price', 'selling price': 'price'
+                      'מחיר סיטונאות מבצע': 'price', 'price euro': 'price', 'selling price': 'price', 'export price euro': 'price'
                       }
         for column in self.df.columns:
             low_column = column.lower().strip()
