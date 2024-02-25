@@ -65,7 +65,8 @@ class Analysis:
                       'line': 'brand', 'retail': 'price', 'net. price': 'price', 'euro  price': 'price', 'eur': 'price',
                       'signature': 'brand', 'material name en': 'description', 'עלות קניה א.נ יוסף סחר': 'price', 
                       'מחיר סיטונאות מבצע': 'price', 'price euro': 'price', 'selling price': 'price', 'export price euro': 'price',
-                      'descripción': 'description', 'delivered': 'qnty'
+                      'descripción': 'description', 'delivered': 'qnty', 'brief description': 'description', 'ean article': 'Barcode',
+                      'sales price eur/pcs': 'price', 'available': 'qnty', 'currentcost': 'price'
                       }
         for column in self.df.columns:
             low_column = column.lower().strip()
