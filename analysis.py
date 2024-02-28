@@ -66,7 +66,7 @@ class Analysis:
                       'signature': 'brand', 'material name en': 'description', 'עלות קניה א.נ יוסף סחר': 'price', 
                       'מחיר סיטונאות מבצע': 'price', 'price euro': 'price', 'selling price': 'price', 'export price euro': 'price',
                       'descripción': 'description', 'delivered': 'qnty', 'brief description': 'description', 'ean article': 'Barcode',
-                      'sales price eur/pcs': 'price', 'available': 'qnty', 'currentcost': 'price'
+                      'sales price eur/pcs': 'price', 'available': 'qnty', 'currentcost': 'price', 'leftover': 'qnty'
                       }
         for column in self.df.columns:
             low_column = column.lower().strip()
@@ -202,7 +202,6 @@ class Analysis:
         '''
         Here we add barcodes and asins from keepa file to baseformat file
         '''
-        self.base_format = self.base_format[~self.base_format["prohibited"].isin([1])] #delete restricted items
         self.base_format = pd.concat([self.base_format, self.keepa_barcode[["Barcode", "ASIN"]]], ignore_index=True)
         self.base_format = self.base_format.drop_duplicates(subset=["Barcode", "ASIN"])
     
@@ -210,6 +209,7 @@ class Analysis:
         '''
         Here we get all the asins. Then we need to put them to keepa
         '''
+        self.base_format = self.base_format[~self.base_format["prohibited"].isin([1])] #delete restricted items
         print("###" * 20, end="\n\n")
         for asin in self.base_format["ASIN"].unique():
             print(asin, end=" ")
