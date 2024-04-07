@@ -52,7 +52,7 @@ class Analysis:
                       "תיאור פריט": "description", "מלאי": "qnty", "מחיר ליחידה": "price", "price  ($)": "price", "upc #": "Barcode",
                       "שם": "description", "eancode": 'Barcode', "descrizione": "description", "mpn": "Barcode", "uni": "qnty",
                       "av.stock": "qnty", "upc": "Barcode", "ean-code": "Barcode", "codice ean": "Barcode", "נטו": "price",
-                      "marca": "brand", "descrizione": "description", "pcs": "qnty", "euro": "price", "euros": "price",
+                      "marca": "brand", "descrizione": "description", "pcs": "qnty", "euro": "price", "euros": "price", 'usd price': 'price',
                       "unit price": "price", "upc code": "Barcode", "direct av. st.": "qnty", "price (t2)": "price", 'stock supp': 'qnty', 
                       "descrizione prodotto": "description", "net . price": "price", "price w/o vat": "price", "quantity": "qnty",
                       "offer eur": "price", "תמחור חדש": "price", "title": "description", "special price": "price", 'עלות': 'price',
@@ -106,7 +106,7 @@ class Analysis:
                 self.df["brand"] = self.df["description"].apply(lambda x: x.split("-")[-1].lower().strip() \
                                                                 if Analysis.is_hebrew(x) else x.split("-")[0].lower().strip())
         user = os.getlogin()
-        self.brands = pd.read_excel(rf"C:\Users\{user}\OneDrive\Python for analysis\restriction_list.xlsx")
+        self.brands = pd.read_excel(rf"G:\My Drive\WORK_EN_Trade\automation_of_analysis\restriction_list.xlsx")
         res_brands = list(self.brands["brand"])
         del_idx = []
         exception_brands = [brand.lower() for brand in self._exception_brands]
